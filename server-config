@@ -1,0 +1,41 @@
+créer un nouveau site dans /etc/apache2/sites-available/starter-orchid.conf
+
+<VirtualHost \*:80>
+ServerName starter-orchid.local
+DocumentRoot /var/www/html/starter-orchid/public
+<Directory /var/www/html/starter-orchid/public>
+Options FollowSymLinks MultiViews
+AllowOverride All
+Require all granted
+</Directory>
+ErrorLog ${APACHE_LOG_DIR}/starter-orchid_error.log
+    CustomLog ${APACHE_LOG_DIR}/starter-orchid_access.log combined
+     # Active PHP (si nécessaire, remplace `php8.1` par ta version)
+    <FilesMatch \.php$>
+SetHandler "proxy:unix:/run/php/php8.4-fpm.sock|fcgi://localhost/"
+</FilesMatch>
+
+</VirtualHost>
+
+sudo a2ensite starter-orchid
+
+---
+
+/etc/hosts
+
+127.0.0.1 starter-orchid.local
+-------------------
+sudo service apache2 restart
+php artisan queue:work
+
+---
+
+php artisan orchid:admin admin razanavahy@gmail.com 120135017
+ALTER table sessions MODIFY COLUMN user_id VARCHAR(255);
+ALTER TABLE images_secondaires MODIFY id INTEGER AUTO_INCREMENT PRIMARY KEY;
+
+---
+
+composer require laravel/horizon
+php artisan horizon
+http://starter-orchid.local:8000/horizon/dashboard

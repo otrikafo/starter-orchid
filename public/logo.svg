@@ -1,0 +1,9 @@
+<svg viewBox="0 0 100 100"
+    xmlns="http://www.w3.org/2000/svg">
+    <style>
+    .logo-text { font-size: 12px; font-weight: bold; font-family: sans-serif; fill: #333; }
+    .logo-shape { fill: #007bff; } /* Primary brand color */
+    </style>
+    <path class="logo-shape" d="M20,80 C30,50 70,50 80,80 L80,20 C70,50 30,50 20,20 Z" />
+    <text x="50" y="60" text-anchor="middle" class="logo-text">MC</text>
+</svg>
