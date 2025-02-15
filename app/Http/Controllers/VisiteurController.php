@@ -40,9 +40,12 @@ class VisiteurController extends Controller
     public function afficherBien(Bien $bien): Response
     {
         $bien->load('agence', 'imagesSecondaires'); // Charger les relations pour la page de détail
+        $visiteur = Auth::guard('visiteur')->user();
 
         return Inertia::render('Visiteur/Biens/Show', [ // Vue Inertia pour le détail d'un bien
             'bien' => $bien,
+            'roomId' => "room-$visiteur->id" . '-' . $bien->id, // ID de la "room" de chat
+            'agence' => $bien->agence(), // ID de l'agence pour le formulaire de contact
         ]);
     }
 

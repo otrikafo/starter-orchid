@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
+// Broadcast::routes(['middleware' => 'auth:visiteur']);
+
+Broadcast::channel('chat-room', function ($user) { // Dynamic channel name with {roomId}
+    return true; // TEMPORARY: Allow all for testing.  REVISE AUTHORIZATION LATER.
 });

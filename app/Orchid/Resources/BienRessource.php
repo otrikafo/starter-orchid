@@ -120,6 +120,11 @@ class BienRessource extends Resource
     {
         return [
             TD::make('titre', 'Title'),
+            // Agence
+            TD::make('agence_id', 'Agency')
+                ->render(function ($model) {
+                    return $model->agence->raison_sociale;
+                }),
             TD::make('description', 'Description'),
             TD::make('prix', 'Price'),
             TD::make('adresse', 'Address'),

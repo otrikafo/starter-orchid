@@ -33,7 +33,9 @@
       <h3 class="section-title">Description</h3>
       <p class="bien-description">{{ bien.description }}</p>
     </div>
-
+    <div v-if="$page.props.auth.visiteur" class="contact-agence-section">
+        <!-- <ChatBox :bien-id="bien.id" :agence-id="bien.agence.id" :room-id="roomId" /> -->
+    </div>
     <div  v-if="$page.props.auth.visiteur" class="contact-agence-section">
       <ContactAgenceForm :bien-id="bien.id" :agence-id="bien.agence.id" />
     </div>
@@ -45,13 +47,14 @@ import { Link } from '@inertiajs/vue3';
 import VisitorLayout from '@/Layouts/VisitorLayout.vue';
 import ContactAgenceForm from '@/Components/ContactAgenceForm.vue';
 import { ref, onMounted } from 'vue';
-
+// import ChatBox from '@/Components/ChatBox.vue';
 defineOptions({
   layout: VisitorLayout,
 });
 
 const props = defineProps({
   bien: Object,
+  roomId: String,
 });
 
 const slideIndex = ref(0); // Index du slide pour le slider de ce bien

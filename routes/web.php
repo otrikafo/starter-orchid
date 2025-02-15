@@ -5,8 +5,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AgenceController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\VisiteurController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PusherAuthController;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -27,7 +29,7 @@ use App\Http\Controllers\HomeController;
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 
-// require __DIR__ . '/auth.php';
+require __DIR__ . '/auth.php';
 
 
 
@@ -103,3 +105,10 @@ Route::middleware(['auth:visiteur'])->group(function () {
 
 // Controller test
 Route::get('/test', [HomeController::class, 'test'])->name('test');
+
+
+Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send.message'); // Route pour envoyer les messages de chat
+Route::post('/broadcasting/auth', [PusherAuthController::class, 'authorize'])->name('pusher.auth'); // Route pour l'autorisation Pusher
+Route::get('/chat', [ChatController::class, 'index']);
+Route::get('/messages', [ChatController::class, 'fetchMessages']);
+Route::post('/messages', [ChatController::class, 'sendMessage']);

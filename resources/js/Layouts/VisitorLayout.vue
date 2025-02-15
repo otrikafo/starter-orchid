@@ -50,6 +50,7 @@
 import { Link, usePage } from '@inertiajs/vue3'; // Import usePage
 
 import { ref } from 'vue';
+// import ChatBox from '@/Components/ChatBox.vue';
 
 const showAgencesSubmenu = ref(false);
 </script>

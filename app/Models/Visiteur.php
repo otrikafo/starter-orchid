@@ -79,4 +79,10 @@ class Visiteur extends Authenticatable
             $model->id = Str::uuid(); // Generate UUID on creation
         });
     }
+
+    // Messsages
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
 }

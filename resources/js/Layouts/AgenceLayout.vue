@@ -41,6 +41,7 @@
 
             <main class="agence-main">
             <slot />
+            <!-- Afficher le chat -->
         </main>
     </div>
 
@@ -52,6 +53,7 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import ChatBox from '@/Components/ChatBox.vue';
 // Debug sur les données d'authentification
 </script>
 
