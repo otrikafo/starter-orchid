@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->uuid('id')->primary();
+            $table->uuid('sender_id')->index();
+            // $table->foreign('sender_id')->references('id')->on('visiteurs'); // Clé étrangère et suppression en cascade
+            $table->string('room_id');
             $table->text('message');
+            $table->string('sender_type');
             $table->timestamps();
         });
     }

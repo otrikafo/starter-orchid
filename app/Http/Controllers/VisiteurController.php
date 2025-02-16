@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Notification;
 
-class VisiteurController extends Controller
+class VisiteurController extends BaseController
 {
     public function indexBiens(): Response
     {
@@ -32,8 +32,13 @@ class VisiteurController extends Controller
             ->paginate(12); // Pagination, 12 biens par page
         // Charger les relations pour les images secondaires
         $biens->load('imagesSecondaires');
-        return Inertia::render('Visiteur/Biens/Index', [ // Vue Inertia pour la liste des biens
+        // return Inertia::render('Visiteur/Biens/Index', [ // Vue Inertia pour la liste des biens
+        //     'biens' => $biens,
+        // ]);
+        return $this->renderWithBreadcrumbs('Visiteur/Biens/Index', [ // Vue Inertia pour la liste des biens
             'biens' => $biens,
+        ], [
+            ['label' => 'Biens', 'route' => 'biens.index'],
         ]);
     }
 
@@ -41,11 +46,13 @@ class VisiteurController extends Controller
     {
         $bien->load('agence', 'imagesSecondaires'); // Charger les relations pour la page de détail
         $visiteur = Auth::guard('visiteur')->user();
-
-        return Inertia::render('Visiteur/Biens/Show', [ // Vue Inertia pour le détail d'un bien
+        return $this->renderWithBreadcrumbs('Visiteur/Biens/Show', [ // Vue Inertia pour le détail d'un bien
             'bien' => $bien,
-            'roomId' => "room-$visiteur->id" . '-' . $bien->id, // ID de la "room" de chat
+            // 'roomId' => "room-$visiteur->id" . '-' . $bien->id, // ID de la "room" de chat
             'agence' => $bien->agence(), // ID de l'agence pour le formulaire de contact
+        ], [
+            ['label' => 'Biens', 'route' => 'biens.index'],
+            ['label' => $bien->titre, 'route' => 'biens.show', 'params' => ['bien' => $bien->id]],
         ]);
     }
 
@@ -62,18 +69,22 @@ class VisiteurController extends Controller
         if ($visiteur) {
             $aDejaLaisseAvis = $agence->avisAgences->contains('visiteur_id', $visiteur->id);
         }
-        return Inertia::render('Visiteur/Agences/Show', [ // Vue Inertia pour le détail
+        return $this->renderWithBreadcrumbs('Visiteur/Agences/Show', [ // Vue Inertia pour le détail
             'agence' => $agence,
             'aDejaLaisseAvis' => $aDejaLaisseAvis,
+        ], [
+            ['label' => 'Agences', 'route' => 'agences.index'],
+            ['label' => $agence->raison_sociale, 'route' => 'agences.show', 'params' => ['agence' => $agence->id]],
         ]);
     }
     // indexAgences
     public function indexAgences(): Response
     {
         $agences = Agence::paginate(4); // Pagination, 12 agences par page
-
-        return Inertia::render('Visiteur/Agences/Index', [ // Vue Inertia pour la liste des agences
+        return $this->renderWithBreadcrumbs('Visiteur/Agences/Index', [ // Vue Inertia pour la liste des agences
             'agences' => $agences,
+        ], [
+            ['label' => 'Agences', 'route' => 'agences.index'],
         ]);
     }
     // Page d'inscription
@@ -83,7 +94,9 @@ class VisiteurController extends Controller
         if (Auth::guard('visiteur')->check()) {
             return Inertia::location(route('visiteur.mon-compte'));
         }
-        return Inertia::render('Visiteur/Inscription'); // Vue Inertia pour l'inscription
+        return $this->renderWithBreadcrumbs('Visiteur/Inscription', [], [
+            ['label' => 'Inscription', 'route' => 'visiteur.inscription'],
+        ]);
     }
 
     public function enregistrerVisiteur(VisiteurRegisterRequest $request)
@@ -111,7 +124,9 @@ class VisiteurController extends Controller
         if (Auth::guard('visiteur')->check()) {
             return Inertia::location(route('visiteur.mon-compte'));
         }
-        return Inertia::render('Visiteur/Connexion'); // Vue Inertia pour la connexion visiteur
+        return $this->renderWithBreadcrumbs('Visiteur/Connexion', [], [
+            ['label' => 'Connexion', 'route' => 'visiteur.connexion'],
+        ]);
     }
 
     public function authentifierVisiteur(VisiteurLoginRequest $request)
@@ -147,8 +162,13 @@ class VisiteurController extends Controller
     {
         $visiteur = Auth::guard('visiteur')->user(); // Récupérez le visiteur connecté
 
-        return Inertia::render('Visiteur/MonCompte', [ // Vue Inertia pour le compte visiteur
+        // return Inertia::render('Visiteur/MonCompte', [ // Vue Inertia pour le compte visiteur
+        //     'visiteur' => $visiteur,
+        // ]);
+        return $this->renderWithBreadcrumbs('Visiteur/MonCompte', [
             'visiteur' => $visiteur,
+        ], [
+            ['label' => 'Mon compte', 'route' => 'visiteur.mon-compte'],
         ]);
     }
 

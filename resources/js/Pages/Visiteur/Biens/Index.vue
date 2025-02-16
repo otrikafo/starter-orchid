@@ -11,9 +11,9 @@
               <div class="slide" v-if="bien.image_principale">
                 <img :src="`/storage/${bien.image_principale}`" :alt="bien.titre" class="slide-image main-image" />
               </div>
-              <div class="slide" v-for="(image, index) in bien.images_secondaires" :key="index">
+              <!-- <div class="slide" v-for="(image, index) in bien.images_secondaires" :key="index">
                 <img :src="`/storage/${image.path}`" :alt="`${bien.titre} - Image secondaire ${index + 1}`" class="slide-image secondary-image" />
-              </div>
+              </div> -->
             </div>
             <div class="slider-controls" v-if="bien.images_secondaires.length + (bien.image_principale ? 1 : 0) > 1">
               <button class="slider-control prev" @click="prevSlide(bien.id)">❮</button>

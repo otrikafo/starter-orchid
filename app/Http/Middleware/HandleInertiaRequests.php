@@ -33,9 +33,6 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
-            ],
-            'auth' => [
                 'user' => $request->user() ?: null, // Utilisateur du guard par défaut (web)
                 'visiteur' => Auth::guard('visiteur')->user() ?: null, // Utilisateur du guard 'visiteur',
                 'agence' => Auth::guard('agence')->user() ?: null, // Utilisateur du guard 'agence',

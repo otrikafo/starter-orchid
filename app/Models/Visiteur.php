@@ -12,7 +12,7 @@ use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
 use Illuminate\Support\Str;
 
-class Visiteur extends Authenticatable
+class Visiteur extends User
 {
     use HasApiTokens, HasFactory, Notifiable, AsSource, Filterable, Attachable;
 
@@ -83,6 +83,6 @@ class Visiteur extends Authenticatable
     // Messsages
     public function messages()
     {
-        return $this->hasMany(Message::class, 'sender_id');
+        return $this->morphMany(Message::class, 'sender');
     }
 }

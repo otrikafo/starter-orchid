@@ -21,7 +21,7 @@ class Message extends Model
      *
      * @var array
      */
-    protected $fillable = ['message', 'sender_id', 'room_id', 'id'];
+    protected $fillable = ['message', 'sender_id', 'room_id', 'id', 'sender_type'];
 
     /**
      * A message belong to a user
@@ -30,6 +30,14 @@ class Message extends Model
      */
     public function sender()
     {
-        return $this->belongsTo(Visiteur::class);
+        return $this->morphTo();
+    }
+
+    /**
+     * Get the room that the message belongs to.
+     */
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_id', 'id'); // Relation avec le modèle Room
     }
 }

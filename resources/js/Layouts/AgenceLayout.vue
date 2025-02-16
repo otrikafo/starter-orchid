@@ -19,6 +19,7 @@
 
     <div class="container">
         <div class="agence-sidebar">
+
             <nav class="sidebar-nav">
                 <Link v-if="$page.props.auth.agence" :href="route('agence.dashboard')" class="sidebar-item":class="{ active: $page.url === route().current('agence.dashboard') }">
                 <i class="fas fa-chart-line sidebar-icon"></i> Dashboard
@@ -30,6 +31,10 @@
                 <Link v-if="$page.props.auth.agence" :href="route('agence.mon-compte')" class="sidebar-item":class="{ active: $page.url === route().current('agence.mon-compte') }">
                 <i class="fas fa-user-cog sidebar-icon"></i> Mon Profil
                 </Link>
+                <!-- Chat -->
+                 <Link v-if="$page.props.auth.agence" :href="route('agence.chat.index')" class="sidebar-item":class="{ active: $page.url === route().current('agence.chat.index') }">
+                <i class="fas fa-comments sidebar-icon"></i> Chat
+                </Link>
               <Link v-if="$page.props.auth.agence" :href="route('agence.deconnexion')" method="post" as="button" class="dropdown-item">
                 <i class="fas fa-user-cog logout-button"></i>
 
@@ -38,11 +43,11 @@
 
             </nav>
             </div>
-
             <main class="agence-main">
-            <slot />
+                <VisitorBreadcrumbs :breadcrumbs="pageBreadcrumbs" />
+                <slot />
             <!-- Afficher le chat -->
-        </main>
+            </main>
     </div>
 
     <footer class="agence-footer">
@@ -52,9 +57,14 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
-import ChatBox from '@/Components/ChatBox.vue';
-// Debug sur les données d'authentification
+import { Link,  usePage} from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import VisitorBreadcrumbs from '@/Components/VisitorBreadcrumbs.vue'; // Importez le composant
+const page = usePage();
+
+const pageBreadcrumbs = computed(() => {
+    return page.props.breadcrumbs || []; // Récupérez les breadcrumbs depuis les props de la page Inertia
+});
 </script>
 
 <style scoped>.agence-layout {

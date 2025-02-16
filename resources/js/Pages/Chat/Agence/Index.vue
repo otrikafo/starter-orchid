@@ -3,11 +3,6 @@
         <div class="container-grid">
             <aside class="chat-list-panel">
                 <h2>Mes Chats Privés</h2>
-                <div class="new-chat-button-container">
-                    <button @click="openAgencySelectionModal" class="new-chat-button">
-                        <span class="plus-icon">+</span> Nouvelle Conversation
-                    </button>
-                </div>
                 <div v-if="rooms && rooms.length > 0" class="rooms-list">
                     <div v-for="room in rooms" :key="room.id" class="room-card"
                          :class="{ 'selected': selectedRoomId === room.id }"
@@ -16,15 +11,14 @@
                             <h3 class="agence-name" v-if="room.agence">{{ room.agence.raison_sociale }}</h3>
                             <p class="no-agence-name" v-else>Agence Inconnue</p>
                         </div>
-                        <div>
-                            <!-- Ouvrir dans la conversation dédié -->
-                            <Link :href="`/chat/${room.id}`">Ouvrir</Link>
-                        </div>
                         <div class="room-details">
                             <p class="last-message" v-if="room.messages && room.messages.length > 0">
                                 Dernier message: "{{ room.messages[room.messages.length - 1].message }}"
                             </p>
                             <p class="no-messages" v-else>Aucun message dans cette salle.</p>
+                        </div>
+                        <div>
+                            <Link :href="`/agence/chat/${room.id}`">Ouvrir</Link>
                         </div>
                     </div>
                 </div>
@@ -42,47 +36,41 @@
                             <span v-else>Agence Inconnue</span>
                         </div>
                         <div class="card-body" ref="chatBody" @scroll="handleScroll">
-                            <chat-messages :messages="messages" :sender="sender"></chat-messages>
+                            <chat-messages :messages="messages" :sender="agence"></chat-messages>
                             <div v-if="loadingMoreMessages" class="loading-indicator">Chargement des messages...</div>
                         </div>
                         <div class="card-footer">
-                            <chat-form @messagesent="addMessage" :sender="$props.sender" :room-id="selectedRoomId"></chat-form>
+                            <chat-form @messagesent="addMessage" :sender="$props.agence" :room-id="selectedRoomId"></chat-form>
                         </div>
                     </div>
                 </div>
                 <div v-else class="no-chat-selected">
-                    <p>Cliquez sur "+ Nouvelle Conversation" pour démarrer un chat privé.</p>
+                    <p>Sélectionnez une conversation à gauche pour afficher les messages.</p>
                 </div>
             </main>
-
-            <agency-selection-modal
-                v-if="showAgencyModal"
-                @close="closeAgencySelectionModal"
-                @agency-selected="handleAgencySelected"
-            />
         </div>
     </VisitorLayout>
 </template>
 
 <script setup>
-import VisitorLayout from '@/Layouts/VisitorLayout.vue';
 import { defineProps, ref, onMounted, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import AgencySelectionModal from '@/Components/AgencySelectionModal.vue';
 import ChatMessages from '@/Components/ChatMessages.vue';
 import ChatForm from '@/Components/ChatForm.vue';
+import AgenceLayout from '@/Layouts/AgenceLayout.vue';
 
+defineOptions({
+  layout: AgenceLayout,
+});
 const props = defineProps({
     rooms: Array,
-    sender: Object,
+    agence: Object,
     initialMessages: Array, // Initial messages prop is no longer directly used for all messages
 });
-//  Get variable unreadMessageCount from layout parent
-const unreadMessageCount = ref(1);
+
 const rooms = ref(props.rooms);
-const sender = ref(props.sender);
+const agence = ref(props.agence);
 const messages = ref([]); // Messages are now loaded per selected room
-const showAgencyModal = ref(false); // Pour contrôler l'affichage du modal
 const chatBody = ref(null);
 const loadingMoreMessages = ref(false);
 const currentPage = ref(1);
@@ -99,45 +87,10 @@ const selectRoom = (room) => {
     fetchMessages(1, room.id); // Load messages for the selected room
     setupEchoListener(room.id); // Setup Echo listener for the selected room
 };
-const openAgencySelectionModal = () => {
-    showAgencyModal.value = true;
-};
-
-const closeAgencySelectionModal = () => {
-    showAgencyModal.value = false;
-};
-
-const handleAgencySelected = (agenceId) => {
-    closeAgencySelectionModal();
-    startChatWithAgency(agenceId); // Fonction pour démarrer le chat après sélection de l'agence
-};
-
-
-const startChatWithAgency = async (agenceId) => {
-    try {
-        const response = await axios.post('/start-private-chat', {
-            agence_id: agenceId,
-        });
-        const roomId = response.data.roomId;
-        console.log('Room ID:', roomId);
-        selectedRoomId.value = roomId; // Définir la salle sélectionnée
-        // Ici, vous pouvez choisir de rediriger vers la page de chat ou de charger directement les messages
-        // Pour l'instant, on va juste définir selectedRoomId pour afficher la zone de chat vide
-        messages.value = response.data.room.messages; // Vider les messages précédents
-        currentPage.value = 1;
-        allMessagesLoaded.value = false;
-        // fetchMessages(1, roomId); // Charger les messages si vous voulez les afficher immédiatement
-        setupEchoListener(roomId); // Configurer Echo Listener
-    } catch (error) {
-        console.error('Erreur lors du démarrage du chat privé:', error);
-        // Gérer l'erreur (afficher un message à l'utilisateur, etc.)
-    }
-};
-
 
 const addMessage = (message) => {
     // messages.value.push(message);
-    axios.post('/messages', { ...message, roomId: selectedRoomId.value }).then(response => {
+    axios.post('/agence/messages', { ...message, roomId: selectedRoomId.value }).then(response => {
         console.log(response.data);
     });
 };
@@ -147,7 +100,7 @@ const fetchMessages = (page, roomId) => {
         return;
     }
     loadingMoreMessages.value = true;
-    axios.get('/messages', { params: { page: page, roomId: roomId } }).then(response => {
+    axios.get('/agence/messages', { params: { page: page, roomId: roomId } }).then(response => {
         loadingMoreMessages.value = false;
         if (response.data.length > 0) {
             messages.value = [...response.data, ...messages.value];
@@ -186,11 +139,6 @@ const setupEchoListener = (roomId) => {
                         sender_id: e.sender.id,
                         sender: e.sender,
                     });
-                    console.log('Messages:', unreadMessageCount.value);
-
-                    unreadMessageCount.value++; // Increment unread message count
-                    console.log('Messages:', e.sender);
-
                     // Mettre  à jour le premier message dans room.messages
                     const roomIndex = rooms.value.findIndex(room => room.id === e.roomId);
                     if (roomIndex > -1) {

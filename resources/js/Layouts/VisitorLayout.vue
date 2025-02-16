@@ -18,6 +18,11 @@
           <Link :href="route('a-propos')" class="nav-item">À propos</Link>
           <Link :href="route('mentions-legales')" class="nav-item">Mentions Légales</Link>
           <Link :href="route('politique-confidentialite')" class="nav-item">Politique de Confidentialité</Link>
+          <li>
+            <ChatLinkWithCounter :chatRoute="route('chat.index')" :messageCount="unreadMessageCount">
+                Messages Privés
+            </ChatLinkWithCounter>
+        </li>
           <!-- Devenir agence -->
           <div class="mon-compte-menu">
             <span class="nav-item mon-compte-label">Mon compte</span>
@@ -33,7 +38,7 @@
         </div>
       </nav>
     </header>
-
+    <VisitorBreadcrumbs :breadcrumbs="pageBreadcrumbs" />
     <main class="visitor-main">
       <slot />
     </main>
@@ -49,9 +54,17 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'; // Import usePage
 
-import { ref } from 'vue';
-// import ChatBox from '@/Components/ChatBox.vue';
+import { ref, computed } from 'vue';
+import VisitorBreadcrumbs from '@/Components/VisitorBreadcrumbs.vue'; // Importez le composant
+import ChatLinkWithCounter from '@/Components/ChatLinkWithCounter.vue'; // Importez le composant
 
+const page = usePage();
+
+const pageBreadcrumbs = computed(() => {
+    return page.props.breadcrumbs || []; // Récupérez les breadcrumbs depuis les props de la page Inertia
+});
+// import ChatBox from '@/Components/ChatBox.vue';
+const unreadMessageCount = ref(1);
 const showAgencesSubmenu = ref(false);
 </script>
 

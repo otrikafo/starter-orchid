@@ -22,23 +22,22 @@
 import { ref, defineEmits } from 'vue';
 
 const props = defineProps({
-  sender: Object,
-  roomId: String, // Accepter la prop roomId
+  visiteur: Object,
+  roomId: String,
 });
 
-const emit = defineEmits(['messagesent']);
+const emit = defineEmits(['messagesent']); // Déclarer l'événement messagesent
 const newMessage = ref('');
-const sender = props.sender;
-const roomId = props.roomId; // Récupérer roomId depuis les props
-console.log('roomId in ChatForm', roomId);
-console.log(sender);
+const visiteur = props.visiteur;
+const roomId = props.roomId;
+console.log('roomId', roomId);
 const sendMessage = () => {
   if (newMessage.value) {
-    emit('messagesent', {
-      sender: sender,
-      message: newMessage.value,
-      roomId: roomId, // Inclure roomId dans l'événement
-      sender_id: sender.id,
+    emit('messagesent', { // **Émettre l'événement messagesent vers le parent**
+      sender: visiteur,
+      message: newMessage.value, // Modifier ici pour correspondre à l'attendu dans addMessage du parent
+      roomId: roomId,
+      sender_id: visiteur.id,
     });
     newMessage.value = '';
   }

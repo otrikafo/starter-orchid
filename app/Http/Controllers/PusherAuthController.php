@@ -23,7 +23,6 @@ class PusherAuthController extends Controller
         if (!Auth::guard('visiteur')->check()) { // Exemple : Autoriser seulement les utilisateurs authentifiés
             return response()->json(['error' => 'Non authentifié'], 403); // Retourner une erreur 403 si non authentifié
         }
-
         // 3. Instancier l'objet Pusher avec vos clés d'identification
         $pusher = new Pusher(
             config('broadcasting.connections.pusher.key'),

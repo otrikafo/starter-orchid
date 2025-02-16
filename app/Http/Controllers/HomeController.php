@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class HomeController extends Controller
+class HomeController extends BaseController
 {
     // Run test
     public function test()
@@ -23,23 +23,33 @@ class HomeController extends Controller
     public function index()
     {
         // Tester si un visiteur est connecté
-        return Inertia::render('Home/Index');
+        // return Inertia::render('Home/Index');
+        return $this->renderWithBreadcrumbs('Home/Index', [], []);
     }
 
     public function about()
     {
-        return Inertia::render('Home/APropos');
+        // return Inertia::render('Home/APropos');
+        return $this->renderWithBreadcrumbs('Home/APropos', [], [
+            ['label' => 'A propos', 'route' => 'a-propos', 'active' => true],
+        ]);
     }
 
     // Mentions légales
     public function mentionsLegales()
     {
-        return Inertia::render('Home/MentionsLegales');
+        // return Inertia::render('Home/MentionsLegales');
+        return $this->renderWithBreadcrumbs('Home/MentionsLegales', [], [
+            ['label' => 'Mentions légales', 'route' => 'mentions-legales', 'active' => true],
+        ]);
     }
 
     // politiqueConfidentialite
     public function politiqueConfidentialite()
     {
-        return Inertia::render('Home/PolitiqueConfidentialite');
+        // return Inertia::render('Home/PolitiqueConfidentialite');
+        return $this->renderWithBreadcrumbs('Home/PolitiqueConfidentialite', [], [
+            ['label' => 'Politique de confidentialité', 'route' => 'politique-confidentialite', 'active' => true],
+        ]);
     }
 }

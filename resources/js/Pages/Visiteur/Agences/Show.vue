@@ -2,6 +2,7 @@
   <div class="agence-show-container">
     <div class="agence-header">
       <h1 class="agence-name">{{ $page.props.agence.raison_sociale }}</h1>
+      <button @click="startChat">Démarrer le Chat Privé</button>
     </div>
 
     <section class="agence-details-section">
@@ -79,6 +80,7 @@ import VisitorLayout from '@/Layouts/VisitorLayout.vue';
 import AvisAgenceForm from '@/Components/AvisAgenceForm.vue'; // Importez le composant AvisAgenceForm
 // Component formulaire de contact
 // import ContactAgenceForm from '@/Components/ContactAgenceForm.vue'; // Importez le composant ContactAgenceForm
+import { router } from '@inertiajs/vue3';
 
 defineOptions({
   layout: VisitorLayout,
@@ -86,8 +88,35 @@ defineOptions({
 const props = defineProps({
   agence: Object,
   aDejaLaisseAvis: Boolean,
+  agence: Object, // Prop pour les détails de l'agence
 });
 
+const startChat = async () => {
+  try {
+    const response = await axios.post('/start-private-chat', {
+      agence_id: props.agence.id, // Envoyer l'ID de l'agence
+    });
+    const roomId = response.data.roomId;
+    console.log('Room ID:', roomId);
+    const url = route('chat.show', { room: roomId });
+    console.log('URL:', url);
+    const chatUrl = `Cliquez <a href="${url}">ici</a> pour accéder au chat privé`;
+    // Afficher un pop-up avec le lien vers le chat privé et utiliser sweetdalert2
+    Swal.fire({
+    title: "Chat privé démarré",
+    html: chatUrl,
+    });
+
+
+    // Rediriger vers la page de chat privé, en passant le roomId en query string
+    // router.push({ name: 'chat.show', query: { roomId } });
+    console.log('Redirection vers la page de chat privé');
+
+  } catch (error) {
+    console.error('Erreur lors du démarrage du chat privé:', error);
+    // Gérer l'erreur (afficher un message à l'utilisateur, etc.)
+  }
+};
 </script>
 
 <style scoped>

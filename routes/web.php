@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AgenceController;
+use App\Http\Controllers\ChatAgenceController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\VisiteurController;
 use App\Http\Controllers\HomeController;
@@ -84,6 +85,13 @@ Route::middleware(['auth:agence'])->prefix('agence')->group(function () {
     Route::post('/contacts/{contact:id}/repondre', [AgenceController::class, 'envoyerReponseVisiteur'])->name('agence.contacts.reponse.store');
     // Mon compte
     Route::get('/mon-compte', [AgenceController::class, 'monCompte'])->name('agence.mon-compte');
+
+    // Route pour le chat
+    Route::get('/chat', [ChatAgenceController::class, 'index'])->name('agence.chat.index');
+    Route::get('/chat/{room:id}', [ChatAgenceController::class, 'room'])->name('agence.chat.show');
+    Route::post('/start-private-chat', [ChatAgenceController::class, 'startPrivateChat'])->name('agence.chat.start-private-chat');
+    Route::get('/messages', [ChatAgenceController::class, 'fetchMessages']);
+    Route::post('/messages', [ChatAgenceController::class, 'sendMessage'])->name('agence.chat.send-message');
 });
 
 // Routes pour l'authentification Visiteur (similaire à Agence)
@@ -108,7 +116,11 @@ Route::get('/test', [HomeController::class, 'test'])->name('test');
 
 
 Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send.message'); // Route pour envoyer les messages de chat
-Route::post('/broadcasting/auth', [PusherAuthController::class, 'authorize'])->name('pusher.auth'); // Route pour l'autorisation Pusher
-Route::get('/chat', [ChatController::class, 'index']);
+// Route::post('/broadcasting/auth', [PusherAuthController::class, 'authorize'])->name('pusher.auth'); // Route pour l'autorisation Pusher
+Route::get('/chat', [ChatController::class, 'index'])->name('chat.index')->middleware('auth:visiteur'); // Middleware auth pour le chat
+Route::get('/chat/{room:id}', [ChatController::class, 'room'])->name('chat.show')->middleware('auth:visiteur'); // Middleware auth pour le chat
 Route::get('/messages', [ChatController::class, 'fetchMessages']);
 Route::post('/messages', [ChatController::class, 'sendMessage']);
+Route::post('/start-private-chat', [ChatController::class, 'startPrivateChat'])->middleware('auth:visiteur'); // Nouvelle route pour startPrivateChat
+
+Route::get('/agencies-for-chat', [AgenceController::class, 'getAgenciesForChat']); // Nouvelle route API

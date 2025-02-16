@@ -84,4 +84,9 @@ class Agence extends Authenticatable
             $model->id = Str::uuid(); // Generate UUID on creation
         });
     }
+
+    public function messages()
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
 }

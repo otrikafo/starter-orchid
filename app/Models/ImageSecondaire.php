@@ -23,6 +23,7 @@ class ImageSecondaire extends Model
     protected $fillable = [
         'bien_id',
         'fichier_id',
+        'id'
     ];
 
     /**

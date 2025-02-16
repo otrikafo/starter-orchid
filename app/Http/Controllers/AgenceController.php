@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\AgenceInscrite;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\AgenceLoginRequest;
 use App\Http\Requests\AgenceRegisterRequest;
 use App\Mail\AgenceRegisteredMail;
@@ -20,7 +21,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AgenceController extends Controller
+class AgenceController extends BaseController
 {
     public function inscription()
     {
@@ -28,7 +29,9 @@ class AgenceController extends Controller
         if (Auth::guard('agence')->check()) {
             return Inertia::location(route('agence.dashboard'));
         }
-        return Inertia::render('Agence/Inscription'); // Vue Inertia pour l'inscription
+        return $this->renderWithBreadcrumbs('Agence/Inscription', [], [ // Utiliser renderWithBreadcrumbs
+            ['label' => 'Inscription', 'route' => 'visiteur.inscription', 'active' => true],
+        ]);
     }
 
     public function enregistrerAgence(AgenceRegisterRequest $request)
@@ -43,8 +46,6 @@ class AgenceController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Mail::to($agence->email)->send(new AgenceRegisteredMail($agence));
-        // Mail::to(config('mail.admin_email'))->send(new AdminNotificationNewAgencyMail($agence));
         AgenceInscrite::dispatch($agence); // Déclencher l'événement AgenceInscrite
         // Authentification après l'inscription
         Auth::guard('agence')->login($agence);
@@ -58,7 +59,10 @@ class AgenceController extends Controller
         if (Auth::guard('agence')->check()) {
             return Inertia::location(route('agence.dashboard'));
         }
-        return Inertia::render('Agence/Connexion'); // Vue Inertia pour la connexion visiteur
+        // return Inertia::render('Agence/Connexion'); // Vue Inertia pour la connexion visiteur
+        return $this->renderWithBreadcrumbs('Agence/Connexion', [], [
+            ['label' => 'Connexion', 'route' => 'agence.connexion', 'active' => true],
+        ]);
     }
 
     public function authentifierAgence(AgenceLoginRequest $request)
@@ -94,9 +98,18 @@ class AgenceController extends Controller
     {
         $agence = Auth::guard('agence')->user(); // Récupérez le agence connecté
 
-        return Inertia::render('Agence/MonCompte', [ // Vue Inertia pour le compte agence
-            'agence' => $agence,
-        ]);
+        // return Inertia::render('Agence/MonCompte', [ // Vue Inertia pour le compte agence
+        //     'agence' => $agence,
+        // ]);
+        return $this->renderWithBreadcrumbs(
+            'Agence/MonCompte',
+            [
+                'agence' => $agence,
+            ],
+            [
+                ['label' => 'Mon compte', 'route' => 'agence.mon-compte'],
+            ]
+        );
     }
 
     // dashboard
@@ -110,16 +123,29 @@ class AgenceController extends Controller
     {
         $agence = Auth::guard('agence')->user(); // Récupérez le agence connecté
         $biens = $agence->biens()->paginate(10); // Récupérez les biens de l'agence
-
-        return Inertia::render('Agence/Biens/Index', [ // Vue Inertia pour les biens de l'agence
-            'biens' => $biens,
-        ]);
+        return $this->renderWithBreadcrumbs(
+            'Agence/Biens/Index',
+            [
+                'biens' => $biens,
+            ],
+            [
+                ['label' => 'Biens', 'route' => 'agence.biens.index'],
+            ]
+        );
     }
 
     // biens.create
     public function creerBien(): Response
     {
-        return Inertia::render('Agence/Biens/Create'); // Vue Inertia pour créer un bien
+        // return Inertia::render('Agence/Biens/Create'); // Vue Inertia pour créer un bien
+        return $this->renderWithBreadcrumbs(
+            'Agence/Biens/Create',
+            [],
+            [
+                ['label' => 'Biens', 'route' => 'agence.biens.index'],
+                ['label' => 'Créer', 'route' => 'agence.biens.create', 'active' => true],
+            ]
+        );
     }
 
     // biens.store
@@ -217,5 +243,16 @@ class AgenceController extends Controller
             }
         }
         return redirect()->route('agence.biens.index')->with('success', 'Bien immobilier mis à jour avec succès.');
+    }
+
+    /**
+     * Récupère la liste des agences pour le chat.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAgenciesForChat()
+    {
+        $agencies = Agence::select('id', 'raison_sociale')->get(); // Récupérez les agences (sélectionnez au moins 'id' et 'raison_sociale')
+        return response()->json($agencies); // Retournez la liste des agences en JSON
     }
 }

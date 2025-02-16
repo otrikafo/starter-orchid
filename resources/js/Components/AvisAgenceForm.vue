@@ -28,7 +28,7 @@ import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
   agenceId: {
-    type: Number,
+    type: String,
     required: true,
   },
 });

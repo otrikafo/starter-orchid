@@ -36,8 +36,8 @@
 
 <script setup>
 import { useForm, router } from '@inertiajs/vue3';
-import VisitorLayout from '@/Layouts/VisitorLayout.vue';
 import { ref } from 'vue';
+import VisitorLayout from '@/Layouts/VisitorLayout.vue';
 
 defineOptions({
   layout: VisitorLayout,

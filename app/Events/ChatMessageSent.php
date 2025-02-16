@@ -3,30 +3,33 @@
 namespace App\Events;
 
 use App\Models\Message;
+use App\Models\Room;
 use App\Models\Visiteur;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ChatMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Visiteur $visiteur;
+    public Authenticatable $sender;
     public Message $message;
-    public string $roomId;
+    public Room     $room;
     /**
      * Create a new event instance.
      */
-    public function __construct(Visiteur $visiteur, Message $message, string $roomId)
+    public function __construct(Authenticatable $sender, Message $message, Room $room)
     {
-        $this->visiteur = $visiteur;
+        $this->sender = $sender;
         $this->message = $message;
-        $this->roomId = $roomId;
+        $this->room = $room;
     }
 
     /**
@@ -36,19 +39,23 @@ class ChatMessageSent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
+
+        Log::info("chat-room.{$this->room->id}");
         return [
-            new Channel($this->roomId),
+            // new Channel($this->room->id}");),
+            // new PrivateChannel("chat-room.{$this->room->id}"),
+            new Channel("chat-room.{$this->room->id}"),
         ];
     }
 
-    // /**
-    //  * The event's broadcast name.
-    //  *
-    //  * @return string
-    //  */
+    /**
+     * The event's broadcast name.
+     *
+     * @return string
+     */
     // public function broadcastAs()
     // {
-    //     return 'message.sent'; // Nom de l'événement diffusé sur Pusher
+    //     return 'App.Events.ChatMessageSent'; // Nom de l'événement diffusé sur Pusher
     // }
 
     /**
@@ -59,8 +66,10 @@ class ChatMessageSent implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'sender' => $this->visiteur,
+            'sender' => $this->sender,
             'message' => $this->message,
+            'roomId' => $this->room->id,
+            'room' => $this->room,
             'timestamp' => now()->toIso8601String(), // Ajouter un timestamp pour l'affichage côté client
         ];
     }
