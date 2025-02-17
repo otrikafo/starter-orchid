@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
-
+import fs from 'fs';
 export default defineConfig({
     plugins: [
         laravel({
@@ -17,4 +17,10 @@ export default defineConfig({
             },
         }),
     ],
+    devServer: {
+        host: 'starter-orchid.local',
+        https: true,
+        key: fs.readFileSync('.certs/key.pem'),
+        cert: fs.readFileSync('.certs/cert.pem'),
+    },
 });

@@ -85,4 +85,9 @@ class Visiteur extends User
     {
         return $this->morphMany(Message::class, 'sender');
     }
+
+    public function routeNotificationForPusherPushNotifications($notification): string
+    {
+        return 'debug-hello';
+    }
 }

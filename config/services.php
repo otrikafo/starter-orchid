@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'pusher' => [
+        'beams_instance_id' => '6fca8bea-937c-4c14-9eea-c5c9e564d91b',
+        'beams_secret_key' => '9F54E0326D501FC59BEC6F689A6A916072B0FD0F8E903749D0ED2ADFBFBCA9D6',
+    ],
 
 ];

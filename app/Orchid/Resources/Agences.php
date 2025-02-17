@@ -2,22 +2,20 @@
 
 namespace App\Orchid\Resources;
 
-use App\Models\Bien;
-use App\Models\Contact;
-use App\Models\Visiteur;
+use App\Models\Agence;
 use Orchid\Crud\Resource;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Relation;
+use Orchid\Screen\Sight;
 use Orchid\Screen\TD;
 
-class CotanctRessource extends Resource
+class Agences extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = Contact::class;
+    public static $model = Agence::class;
 
     /**
      * Get the fields displayed by the resource.
@@ -27,14 +25,24 @@ class CotanctRessource extends Resource
     public function fields(): array
     {
         return [
-            Relation::make('bien_id')
-                ->fromModel(Bien::class, 'titre')
-                ->title('Bien'),
-            Relation::make('visiteur_id')
-                ->fromModel(Visiteur::class, 'nom')
-                ->title('Visiteur'),
-            Input::make('message')
-                ->title('Message'),
+            Input::make('raison_sociale')
+                ->title('Raison Sociale')
+                ->placeholder('Enter Raison Sociale here'),
+            Input::make('siege')
+                ->title('Siege')
+                ->placeholder('Enter Siege here'),
+            Input::make('nif')
+                ->title('Nif')
+                ->placeholder('Enter Nif here'),
+            Input::make('stat')
+                ->title('Stat')
+                ->placeholder('Enter Stat here'),
+            Input::make('email')
+                ->title('Email')
+                ->placeholder('Enter Email here'),
+            Input::make('password')
+                ->title('Password')
+                ->placeholder('Enter Password here'),
         ];
     }
 
@@ -47,7 +55,11 @@ class CotanctRessource extends Resource
     {
         return [
             TD::make('id'),
-
+            TD::make('raison_sociale', 'Raison Sociale'),
+            TD::make('siege'),
+            TD::make('nif'),
+            TD::make('stat'),
+            TD::make('email'),
             TD::make('created_at', 'Date of creation')
                 ->render(function ($model) {
                     return $model->created_at->toDateTimeString();
@@ -67,7 +79,13 @@ class CotanctRessource extends Resource
      */
     public function legend(): array
     {
-        return [];
+        return [
+            Sight::make('id'),
+            Sight::make('raison_sociale'),
+            Sight::make('siege'),
+            Sight::make('nif'),
+            Sight::make('stat'),
+        ];
     }
 
     /**

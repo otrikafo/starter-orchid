@@ -6,12 +6,13 @@ use App\Models\Agence;
 use App\Models\Bien;
 use App\Models\Fichier;
 use Orchid\Crud\Resource;
+use Orchid\Screen\Fields\Attach;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\TD;
 
-class BienRessource extends Resource
+class Biens extends Resource
 {
     /**
      * The model the resource corresponds to.
@@ -31,9 +32,13 @@ class BienRessource extends Resource
             Relation::make('agence_id')
                 ->fromModel(Agence::class, 'raison_sociale')
                 ->title('Agence'),
-            Relation::make('imagesSecondaires')
-                ->fromModel(Fichier::class, 'nom')
-                ->title('Images secondaires'),
+            // Relation::make('images_secondaires')
+            //     ->fromModel(Fichier::class, 'nom_fichier')
+            //     ->title('Images secondaires'),
+            Attach::make('images_secondaires')
+                ->multiple()
+                ->title('Ajouter les images')
+                ->horizontal(),
             Input::make('titre')
                 ->title('Titre'),
             Input::make('description')
@@ -119,6 +124,15 @@ class BienRessource extends Resource
     public function columns(): array
     {
         return [
+            TD::make('image_principale', 'Main image')
+                ->render(function ($model) {
+                    // $model->image_principale = Fichier::find($model->image_principale);
+                    // dump($model);
+                    if ($model->image_principale) {
+                        return "<img src='/storage/{$model->image_principale}' alt='{$model->image_principale}' style='max-width: 100px; max-height: 100px;'>";
+                    }
+                }),
+
             TD::make('titre', 'Title'),
             // Agence
             TD::make('agence_id', 'Agency')
@@ -136,14 +150,6 @@ class BienRessource extends Resource
             TD::make('type_bien', 'Type of property'),
             TD::make('type_transaction', 'Transaction type'),
             // Afficher l'imae principale
-            TD::make('image_principale', 'Main image')
-                ->render(function ($model) {
-                    $model->image_principale = Fichier::find($model->image_principale);
-                    dump($model);
-                    if ($model->image_principale) {
-                        return "<img src='{$model->image_principale->chemin}' alt='{$model->image_principale->nom_fichier}' style='max-width: 100px; max-height: 100px;'>";
-                    }
-                }),
 
             TD::make('created_at', 'Date of creation')
                 ->render(function ($model) {

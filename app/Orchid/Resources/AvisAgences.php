@@ -2,19 +2,22 @@
 
 namespace App\Orchid\Resources;
 
+use App\Models\Agence;
+use App\Models\AvisAgence;
 use App\Models\Visiteur;
 use Orchid\Crud\Resource;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\TD;
 
-class VisiteurRessource extends Resource
+class AvisAgences extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = Visiteur::class;
+    public static $model = AvisAgence::class;
 
     /**
      * Get the fields displayed by the resource.
@@ -24,21 +27,16 @@ class VisiteurRessource extends Resource
     public function fields(): array
     {
         return [
-            Input::make('email')
-                ->title('Email')
-                ->placeholder('Enter Email here'),
-            Input::make('password')
-                ->title('Password')
-                ->placeholder('Enter Password here'),
-            Input::make('nom')
-                ->title('Nom')
-                ->placeholder('Enter Nom here'),
-            Input::make('prenom')
-                ->title('Prenom')
-                ->placeholder('Enter Prenom here'),
-            Input::make('adresse')
-                ->title('Adresse')
-                ->placeholder('Enter Adresse here'),
+            Relation::make('agence_id')
+                ->fromModel(Agence::class, 'raison_sociale')
+                ->title('Agence'),
+            Relation::make('visiteur_id')
+                ->fromModel(Visiteur::class, 'nom')
+                ->title('Visiteur'),
+            Input::make('note')
+                ->title('Note'),
+            Input::make('commentaire')
+                ->title('Commentaire'),
         ];
     }
 
@@ -50,12 +48,16 @@ class VisiteurRessource extends Resource
     public function columns(): array
     {
         return [
-            TD::make('id'),
-            TD::make('email', 'Email'),
-            TD::make('nom', 'Nom'),
-            TD::make('prenom', 'Prenom'),
-            TD::make('adresse', 'Adresse'),
-
+            TD::make('agence_id', 'Agence')
+                ->render(function ($model) {
+                    return $model->agence->raison_sociale;
+                }),
+            TD::make('visiteur_id', 'Visiteur')
+                ->render(function ($model) {
+                    return $model->visiteur->nom;
+                }),
+            TD::make('note', 'Note'),
+            TD::make('commentaire', 'Commentaire'),
             TD::make('created_at', 'Date of creation')
                 ->render(function ($model) {
                     return $model->created_at->toDateTimeString();

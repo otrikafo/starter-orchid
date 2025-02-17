@@ -2,20 +2,19 @@
 
 namespace App\Orchid\Resources;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Visiteur;
 use Orchid\Crud\Resource;
-use Orchid\Screen\TD;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Sight;
+use Orchid\Screen\TD;
 
-class PostResource extends Resource
+class Visiteurs extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\Post::class;
+    public static $model = Visiteur::class;
 
     /**
      * Get the fields displayed by the resource.
@@ -25,9 +24,21 @@ class PostResource extends Resource
     public function fields(): array
     {
         return [
-            Input::make('title')
-                ->title('Title')
-                ->placeholder('Enter title here'),
+            Input::make('email')
+                ->title('Email')
+                ->placeholder('Enter Email here'),
+            Input::make('password')
+                ->title('Password')
+                ->placeholder('Enter Password here'),
+            Input::make('nom')
+                ->title('Nom')
+                ->placeholder('Enter Nom here'),
+            Input::make('prenom')
+                ->title('Prenom')
+                ->placeholder('Enter Prenom here'),
+            Input::make('adresse')
+                ->title('Adresse')
+                ->placeholder('Enter Adresse here'),
         ];
     }
 
@@ -40,7 +51,11 @@ class PostResource extends Resource
     {
         return [
             TD::make('id'),
-            TD::make('title'),
+            TD::make('email', 'Email'),
+            TD::make('nom', 'Nom'),
+            TD::make('prenom', 'Prenom'),
+            TD::make('adresse', 'Adresse'),
+
             TD::make('created_at', 'Date of creation')
                 ->render(function ($model) {
                     return $model->created_at->toDateTimeString();
@@ -60,10 +75,7 @@ class PostResource extends Resource
      */
     public function legend(): array
     {
-        return [
-            Sight::make('id'),
-            Sight::make('title'),
-        ];
+        return [];
     }
 
     /**
@@ -74,19 +86,5 @@ class PostResource extends Resource
     public function filters(): array
     {
         return [];
-    }
-    /**
-     * Get the validation rules that apply to save/update.
-     *
-     * @return array
-     */
-    public function rules(Model $model): array
-    {
-        return [
-            'slug' => [
-                'required',
-                Rule::unique(self::$model, 'slug')->ignore($model),
-            ],
-        ];
     }
 }

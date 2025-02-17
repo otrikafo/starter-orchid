@@ -102,11 +102,6 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bag')
                 ->route('platform.agence')
                 ->title('Agences'),
-            // Avis Agence
-            // Menu::make('Avis Agences')
-            //     ->icon('bag')
-            //     ->route('platform.avis-agence')
-            //     ->title('Avis Agences'),
         ];
     }
 

@@ -11,3 +11,12 @@ window.Echo = new Echo({
     namespace: 'App.Events',
 });
 
+// const beamsClient = new PusherPushNotifications.Client({
+//     instanceId: '6fca8bea-937c-4c14-9eea-c5c9e564d91b',
+// });
+
+// beamsClient.start()
+//     .then(() => beamsClient.addDeviceInterest('debug-hello'))
+//     .then(() => console.log('Successfully registered and subscribed!'))
+//     .catch(console.error);
+

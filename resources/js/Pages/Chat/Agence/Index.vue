@@ -36,11 +36,11 @@
                             <span v-else>Agence Inconnue</span>
                         </div>
                         <div class="card-body" ref="chatBody" @scroll="handleScroll">
-                            <chat-messages :messages="messages" :sender="agence"></chat-messages>
+                            <chat-messages :messages="messages" :sender="sender"></chat-messages>
                             <div v-if="loadingMoreMessages" class="loading-indicator">Chargement des messages...</div>
                         </div>
                         <div class="card-footer">
-                            <chat-form @messagesent="addMessage" :sender="$props.agence" :room-id="selectedRoomId"></chat-form>
+                            <chat-form @messagesent="addMessage" :sender="$props.sender" :room-id="selectedRoomId"></chat-form>
                         </div>
                     </div>
                 </div>
@@ -64,12 +64,12 @@ defineOptions({
 });
 const props = defineProps({
     rooms: Array,
-    agence: Object,
+    sender: Object,
     initialMessages: Array, // Initial messages prop is no longer directly used for all messages
 });
 
 const rooms = ref(props.rooms);
-const agence = ref(props.agence);
+const sender = ref(props.sender);
 const messages = ref([]); // Messages are now loaded per selected room
 const chatBody = ref(null);
 const loadingMoreMessages = ref(false);
@@ -131,8 +131,8 @@ const setupEchoListener = (roomId) => {
 
         window.Echo.channel(`chat-room.${roomId}`)
             .listen('ChatMessageSent', (e) => {
-                if (e.roomId === selectedRoomId.value) {
                     console.log('Received message:', e.message.message, 'for room:', e.roomId);
+                if (e.roomId === selectedRoomId.value) {
                      // Check if message is for the currently selected room
                     messages.value.push({
                         message: e.message.message,
