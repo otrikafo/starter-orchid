@@ -6,21 +6,25 @@
         <Link :href="route('home')" class="logo-link">
           <img src="/logo.svg" alt="Logo de l'Agence" class="agence-logo" />
         </Link>
-        <span class="agence-brand">Espace Agence</span> <span class="user-icon">👤</span>
+        <span class="agence-brand">Espace Agence</span>
+
       </div>
       <div class="header-right">
-        <div class="user-info">
-          <span class="user-name" v-if="$page.props.auth.agence">{{ $page.props.auth.agence.raison_sociale }}</span>
-          <Link :href="route('agence.deconnexion')" method="post" as="button" class="logout-button">Déconnexion</Link>
-        </div>
       </div>
+        <div class="hamburger-icon" :class="{ open: isSidebarOpen }" @click="toggleSidebar">
+            <span class="line line1"></span>
+            <span class="line line2"></span>
+            <span class="line line3"></span>
+        </div>
     </div>
   </header>
 
     <div class="container">
-        <div class="agence-sidebar">
-
-            <nav class="sidebar-nav">
+        <aside class="agence-sidebar" :class="{ 'sidebar-open': isSidebarOpen }">  <nav class="sidebar-nav">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <span class="user-name" v-if="$page.props.auth.agence">{{ $page.props.auth.agence.raison_sociale }}</span>
+                </div>
                 <Link v-if="$page.props.auth.agence" :href="route('agence.dashboard')" class="sidebar-item":class="{ active: $page.url === route().current('agence.dashboard') }">
                 <i class="fas fa-chart-line sidebar-icon"></i> Dashboard
                 </Link>
@@ -31,22 +35,18 @@
                 <Link v-if="$page.props.auth.agence" :href="route('agence.mon-compte')" class="sidebar-item":class="{ active: $page.url === route().current('agence.mon-compte') }">
                 <i class="fas fa-user-cog sidebar-icon"></i> Mon Profil
                 </Link>
-                <!-- Chat -->
-                 <Link v-if="$page.props.auth.agence" :href="route('agence.chat.index')" class="sidebar-item":class="{ active: $page.url === route().current('agence.chat.index') }">
+                <Link v-if="$page.props.auth.agence" :href="route('agence.chat.index')" class="sidebar-item":class="{ active: $page.url === route().current('agence.chat.index') }">
                 <i class="fas fa-comments sidebar-icon"></i> Chat
                 </Link>
-              <Link v-if="$page.props.auth.agence" :href="route('agence.deconnexion')" method="post" as="button" class="dropdown-item">
-                <i class="fas fa-user-cog logout-button"></i>
-
-                Déconnexion
-            </Link>
-
+                <Link v-if="$page.props.auth.agence" :href="route('agence.deconnexion')" method="post" as="button" class="dropdown-item">
+                    <i class="fas fa-user-cog logout-button"></i>
+                    Déconnexion
+                </Link>
             </nav>
-            </div>
+        </aside>
             <main class="agence-main">
                 <VisitorBreadcrumbs :breadcrumbs="pageBreadcrumbs" />
                 <slot />
-            <!-- Afficher le chat -->
             </main>
     </div>
 
@@ -65,6 +65,12 @@ const page = usePage();
 const pageBreadcrumbs = computed(() => {
     return page.props.breadcrumbs || []; // Récupérez les breadcrumbs depuis les props de la page Inertia
 });
+
+const isSidebarOpen = ref(false); // Nouvel état pour la sidebar mobile (fermée par défaut)
+
+const toggleSidebar = () => {
+    isSidebarOpen.value = !isSidebarOpen.value; // Basculer l'état de la sidebar mobile
+};
 </script>
 
 <style scoped>.agence-layout {
@@ -216,4 +222,87 @@ const pageBreadcrumbs = computed(() => {
 .logout-button:hover {
   background-color: #c82333; /* Darker red on hover */
 }
+/* ... Vos styles CSS existants pour AgenceLayout.vue (à coller ici) ... */
+
+/* Media Queries pour Responsive Design - Sidebar Collapsible */
+
+@media (max-width: 768px) { /* Styles pour les écrans de tablette et mobiles */
+    .container {
+        flex-direction: column; /* Container en colonne sur mobile (sidebar au-dessus ou cachée) */
+    }
+
+    .agence-sidebar {
+        position: fixed; /* Sidebar en position fixed pour l'overlay ou absolute si push */
+        top: 0;
+        left: 0;
+        height: 100%; /* Pleine hauteur de la fenêtre */
+        width: 250px; /* Garder la largeur de la sidebar (ou ajuster) */
+        z-index: 100; /* Pour être au-dessus du contenu */
+        transform: translateX(-250px); /* Cacher la sidebar par défaut en la déplaçant hors écran à gauche */
+        transition: transform 0.3s ease; /* Animation pour l'ouverture/fermeture */
+        padding-top: 60px; /* Espace pour le header fixe */
+        overflow-y: auto; /* Permettre le scroll si le contenu de la sidebar est trop long */
+    }
+    .agence-sidebar.sidebar-open { /* Classe pour afficher la sidebar mobile */
+        transform: translateX(0); /* Afficher la sidebar en la ramenant dans l'écran */
+    }
+
+    .agence-main {
+        padding-top: 20px; /* Ajuster le padding du contenu principal pour mobile */
+        padding-bottom: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Ajuster le header pour mobile - optionnel, peut-être juste réduire le padding */
+    .agence-header {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Bouton menu hamburger dans le header (visible seulement sur mobile) */
+    .header-content {
+        position: relative; /* Important pour positionner le hamburger icon absolument */
+    }
+    .hamburger-icon { /* Réutilisation du style du VisitorLayout.vue */
+        position: absolute;
+        top: 20px; /* Ajuster selon besoin */
+        right: 20px; /* Ajuster selon besoin */
+        display: block;
+        cursor: pointer;
+        padding: 10px;
+    }
+    .hamburger-icon .line { /* Réutilisation du style du VisitorLayout.vue */
+        width: 25px;
+        height: 3px;
+        background-color: #333;
+        margin: 5px 0;
+        display: block;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hamburger-icon.open .line1 { /* Réutilisation du style du VisitorLayout.vue */
+        transform: rotate(-45deg) translate(-6px, 7px);
+    }
+    .hamburger-icon.open .line2 { /* Réutilisation du style du VisitorLayout.vue */
+        opacity: 0;
+    }
+    .hamburger-icon.open .line3 { /* Réutilisation du style du VisitorLayout.vue */
+        transform: rotate(45deg) translate(-6px, -8px);
+    }
+    .agence-sidebar.sidebar-open + .hamburger-icon { /* Optionnel: Style si besoin quand menu ouvert */
+        /* Par exemple changer la couleur du hamburger icon quand menu ouvert */
+    }
+}
+
+@media (max-width: 576px) { /* Styles pour les petits mobiles - ajustements optionnels */
+    .agence-main {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .agence-header {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
 </style>

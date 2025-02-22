@@ -36,11 +36,11 @@
 
 <script setup>
 import { useForm, router } from '@inertiajs/vue3';
-import AgenceLayout from '@/Layouts/AgenceLayout.vue';
 import { ref } from 'vue';
+import VisitorLayout from '@/Layouts/VisitorLayout.vue';
 
 defineOptions({
-  layout: AgenceLayout,
+  layout: VisitorLayout,
 });
 
 const activeTab = ref('login'); // 'login' or 'register' (but register is just a link)

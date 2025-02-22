@@ -1,7 +1,7 @@
 <template>
 <div class="container">
     <div class="card">
-        <div class="card-header">Chats Privés (Salle: {{ roomId }})</div>
+        <div class="card-header">Chats Privés ( {{ room.agence.raison_sociale }})</div>
         <div class="card-body" ref="chatBody" @scroll="handleScroll">
             <chat-messages :messages="messages" :sender="sender"></chat-messages>
             <div v-if="loadingMoreMessages" class="loading-indicator">Chargement des messages...</div>
@@ -27,7 +27,8 @@ const props = defineProps({
     auth: Object,
     sender: Object,
     initialMessages: Array,
-    roomId: String, // Récupérer roomId comme prop
+    roomId: String, // Récupérer roomId comme prop,
+    room: Object,
 });
 
 const messages = ref(props.initialMessages);

@@ -322,4 +322,90 @@ onMounted(() => {
     font-style: italic;
     text-align: center;
 }
+
+/* ... CSS existant de la page de chat (à coller ici) ... */
+
+/* Media Queries pour Responsive Design - Page Chat */
+
+@media (max-width: 768px) { /* Styles pour les écrans de tablette et mobiles */
+    .container-grid {
+        grid-template-columns: 1fr; /* Une seule colonne sur mobile - panneaux empilés */
+        flex-direction: column; /* Fallback pour les vieux navigateurs qui ne supportent pas grid-template-columns: 1fr seul */
+        height: auto; /* Hauteur auto pour s'adapter au contenu sur mobile */
+        margin: 10px auto; /* Réduire les marges extérieures sur mobile */
+        border-radius: 0; /* Supprimer les bordures arrondies sur mobile (optionnel) */
+        overflow: visible; /* Permettre au contenu de dépasser si nécessaire */
+    }
+
+    .chat-list-panel {
+        width: 100%; /* Panneau de liste de chats pleine largeur sur mobile */
+        border-right: none; /* Supprimer la bordure droite sur mobile */
+        border-bottom: 1px solid #ddd; /* Ajouter une bordure inférieure pour séparer les panneaux */
+        padding: 15px; /* Réduire le padding sur mobile */
+        height: auto; /* Hauteur auto pour s'adapter à la liste des chats */
+        overflow-y: scroll; /* Garder le scroll si la liste est longue */
+        max-height: 300px; /* Limiter la hauteur max du panneau de chats - optionnel */
+    }
+
+    .chat-list-panel h2 {
+        font-size: 1.2em; /* Réduire la taille du titre sur mobile */
+        margin-bottom: 10px;
+    }
+
+    .room-card {
+        padding: 10px; /* Réduire le padding des cartes de chat sur mobile */
+    }
+
+    .room-header {
+        margin-bottom: 8px;
+    }
+
+    .agence-name {
+        font-size: 0.9em; /* Réduire la taille du nom de l'agence sur mobile */
+    }
+
+    .no-agence-name, .last-message, .no-messages {
+        font-size: 0.8em; /* Réduire la taille du texte des détails de la salle sur mobile */
+    }
+
+
+    .message-panel {
+        padding: 15px; /* Réduire le padding du panneau de messages sur mobile */
+        height: auto; /* Hauteur auto pour s'adapter au contenu sur mobile */
+    }
+
+    .card-header {
+        padding: 12px; /* Réduire le padding de l'header de la carte sur mobile */
+        font-size: 1em; /* Réduire la taille de la police de l'header de la carte sur mobile */
+    }
+
+    .card-body {
+        padding: 15px; /* Réduire le padding du body de la carte sur mobile */
+        height: auto; /* Hauteur auto pour s'adapter aux messages */
+        min-height: 300px; /* Hauteur minimum pour la zone de chat - optionnel */
+    }
+
+    .card-footer {
+        padding: 12px; /* Réduire le padding du footer de la carte sur mobile */
+    }
+
+    .no-chat-selected p {
+        font-size: 0.9em; /* Réduire la taille de la police du message "sélectionnez un chat" sur mobile */
+    }
+}
+
+@media (max-width: 576px) { /* Styles pour les petits mobiles - ajustements optionnels */
+    .chat-list-panel {
+        padding-left: 10px;
+        padding-right: 10px;
+        max-height: 250px; /* Encore moins de hauteur max sur très petits mobiles - optionnel */
+    }
+    .message-panel {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .card-body {
+        padding: 10px; /* Encore moins de padding sur très petits mobiles */
+    }
+}
 </style>

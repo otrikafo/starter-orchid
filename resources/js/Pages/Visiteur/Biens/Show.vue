@@ -11,21 +11,22 @@
     </div>
 
     <div class="bien-image-section">
-      <div class="bien-image-slider">
-        <div class="slider-container">
-          <div class="slider-wrapper" :style="{ transform: `translateX(-${slideIndex * 100}%)` }">
-            <div class="slide" v-if="bien.image_principale">
-              <img :src="`/storage/${bien.image_principale}`" :alt="bien.titre" class="slide-image main-image" />
-            </div>
-            <div class="slide" v-for="(image, index) in bien.images_secondaires" :key="index">
-              <img :src="`/storage/${image.chemin}`" :alt="`${bien.titre} - Image secondaire ${index + 1}`" class="slide-image secondary-image" />
-            </div>
-          </div>
-          <div class="slider-controls" v-if="bien.images_secondaires.length + (bien.image_principale ? 1 : 0) > 1">
-            <button class="slider-control prev" @click="prevSlide">❮</button>
-            <button class="slider-control next" @click="nextSlide">❯</button>
-          </div>
+      <div class="main-image-container" v-if="bien.image_principale">
+        <img :src="`/storage/${bien.image_principale}`" :alt="bien.titre" class="main-image" @click="openModal(bien.image_principale)" />
+      </div>
+
+      <div class="thumbnail-gallery" v-if="bien.images_secondaires.length > 0 || bien.image_principale">
+        <div class="thumbnail-item" v-if="bien.image_principale">
+          <img :src="`/storage/${bien.image_principale}`" :alt="bien.titre" class="thumbnail-image" @click="openModal(bien.image_principale)" />
         </div>
+        <div class="thumbnail-item" v-for="(image, index) in bien.images_secondaires" :key="index">
+          <img :src="`/storage/${image.chemin}`" :alt="`${bien.titre} - Image secondaire ${index + 1}`" class="thumbnail-image" @click="openModal(image.chemin)" />
+        </div>
+      </div>
+
+      <div v-if="isModalOpen" class="image-modal" @click.self="closeModal">
+        <span class="modal-close-button" @click="closeModal">&times;</span>
+        <img :src="`/storage/${modalImageSrc}`" :alt="bien.titre" class="modal-image" />
       </div>
     </div>
 
@@ -34,8 +35,7 @@
       <p class="bien-description">{{ bien.description }}</p>
     </div>
     <div v-if="$page.props.auth.visiteur" class="contact-agence-section">
-        <!-- <ChatBox :bien-id="bien.id" :agence-id="bien.agence.id" :room-id="roomId" /> -->
-    </div>
+        </div>
     <div  v-if="$page.props.auth.visiteur" class="contact-agence-section">
       <ContactAgenceForm :bien-id="bien.id" :agence-id="bien.agence.id" />
     </div>
@@ -57,20 +57,24 @@ const props = defineProps({
   roomId: String,
 });
 
-const slideIndex = ref(0); // Index du slide pour le slider de ce bien
 
-const nextSlide = () => {
-  const totalSlides = (props.bien.images_secondaires.length) + (props.bien.image_principale ? 1 : 0);
-  slideIndex.value = (slideIndex.value + 1) % totalSlides;
+const isModalOpen = ref(false);
+const modalImageSrc = ref('');
+
+const openModal = (imageSrc) => {
+  modalImageSrc.value = imageSrc;
+  isModalOpen.value = true;
+  document.body.style.overflow = 'hidden'; // Empêcher le scroll du body
 };
 
-const prevSlide = () => {
-  const totalSlides = (props.bien.images_secondaires.length) + (props.bien.image_principale ? 1 : 0);
-  slideIndex.value = (slideIndex.value - 1 + totalSlides) % totalSlides;
+const closeModal = () => {
+  isModalOpen.value = false;
+  modalImageSrc.value = '';
+  document.body.style.overflow = ''; // Réactiver le scroll du body
 };
+
 
 onMounted(() => {
-  slideIndex.value = 0; // Initialiser l'index du slider à 0 au montage
 });
 </script>
 
@@ -131,92 +135,95 @@ onMounted(() => {
 }
 
 
-/* Image Slider Styles (Réutilisés et légèrement adaptés de la liste) */
+/* Nouvelle Galerie d'Images */
 .bien-image-section {
   margin-bottom: 30px;
 }
 
-.bien-image-slider {
-  position: relative;
-  height: 400px; /* Hauteur plus importante pour la page de détail */
+.main-image-container {
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 10px; /* Plus arrondi pour la page de détail */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Ombre plus prononcée */
-}
-
-.slider-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.slider-wrapper {
-  display: flex;
-  height: 100%;
-  transition: transform 0.5s ease-in-out;
-}
-
-.slide {
-  flex: 1 0 100%;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.slide-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* 'contain' pour afficher l'image entière sans la couper */
-  display: block;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  margin-bottom: 20px; /* Espace entre image principale et miniatures */
+  cursor: pointer; /* Indiquer que l'image est cliquable */
 }
 
 .main-image {
-  /* Styles spécifiques pour l'image principale si nécessaire */
+  display: block; /* Supprimer l'espace sous l'image */
+  width: 100%;
+  height: auto; /* Hauteur auto pour conserver aspect ratio */
+  object-fit: cover; /* 'cover' pour remplir le conteneur, 'contain' si vous préférez */
+  aspect-ratio: 16/9; /* Ratio 16:9 par défaut, peut être ajusté */
 }
 
-.secondary-image {
-  /* Styles spécifiques pour les images secondaires si nécessaire */
+
+.thumbnail-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Grille responsive */
+  gap: 8px; /* Espacement entre les miniatures */
 }
 
-.slider-controls {
-  position: absolute;
-  top: 50%;
+.thumbnail-item {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer; /* Indiquer que les miniatures sont cliquables */
+  aspect-ratio: 1/1; /* Ratio carré pour les miniatures */
+  position: relative; /* Pour le pseudo-élément de survol */
+}
+
+.thumbnail-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 'cover' pour remplir le conteneur */
+  transition: transform 0.2s ease; /* Animation de zoom au survol */
+}
+
+.thumbnail-item:hover .thumbnail-image {
+  transform: scale(1.05); /* Zoom léger au survol */
+}
+
+
+/* Style Modal (Lightbox) */
+.image-modal {
+  position: fixed; /* Fixed pour couvrir toute la fenêtre */
+  top: 0;
   left: 0;
-  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Fond semi-transparent noir */
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  transform: translateY(-50%);
-  pointer-events: none;
+  z-index: 1000; /* Assurer que la modale est au-dessus de tout */
 }
 
-.slider-control {
-  pointer-events: auto;
-  background: rgba(255, 255, 255, 0.8); /* Fond plus opaque pour la page détail */
-  color: #333;
-  border: none;
-  padding: 12px 18px; /* Plus grands boutons */
-  border-radius: 8px; /* Plus arrondis */
-  margin: 15px;
+.modal-close-button {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: #fff;
+  font-size: 3em;
   cursor: pointer;
-  font-size: 1.2em; /* Plus grands boutons */
-  transition: background-color 0.3s ease;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
-.slider-control:hover {
-  background-color: rgba(255, 255, 255, 0.95); /* Hover plus clair */
+.modal-close-button:hover {
+  opacity: 1;
 }
 
-.slider-control:disabled {
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
+.modal-image {
+  max-width: 90%; /* Largeur max de l'image dans la modale */
+  max-height: 90%; /* Hauteur max de l'image dans la modale */
+  object-fit: contain; /* 'contain' pour afficher l'image entière dans la modale */
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 
-/* Description Section */
+/* Description Section - Styles inchangés */
 .bien-description-section {
   margin-bottom: 30px;
   padding: 20px;
@@ -239,7 +246,7 @@ onMounted(() => {
   line-height: 1.7;
 }
 
-/* Contact Agence Section */
+/* Contact Agence Section - Styles inchangés */
 .contact-agence-section {
   /* Vous pouvez ajouter des styles spécifiques si nécessaire */
 }

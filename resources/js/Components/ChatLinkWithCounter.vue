@@ -1,5 +1,5 @@
 <template>
-    <Link :href="chatRoute" class="chat-link-with-counter">
+    <Link :href="chatRoute" class="sidebar-item chat-link-with-counter">
         <slot>Chat Privé</slot>  <span v-if="messageCount > 0" class="message-counter">
             {{ messageCount }}
         </span>

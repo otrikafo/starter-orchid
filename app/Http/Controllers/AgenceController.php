@@ -184,9 +184,19 @@ class AgenceController extends BaseController
         $bien = $agence->biens()->findOrFail($bien); // Récupérez le bien de l'agence
         // Load relations
         $bien->load('imagesSecondaires', 'agence');
-        return Inertia::render('Agence/Biens/Show', [ // Vue Inertia pour voir un bien
-            'bien' => $bien,
-        ]);
+        // return Inertia::render('Agence/Biens/Show', [ // Vue Inertia pour voir un bien
+        //     'bien' => $bien,
+        // ]);
+        return $this->renderWithBreadcrumbs(
+            'Agence/Biens/Show',
+            [
+                'bien' => $bien,
+            ],
+            [
+                ['label' => 'Biens', 'route' => 'agence.biens.index'],
+                ['label' => $bien->titre, 'route' => 'agence.biens.show', 'params' => ['bien' => $bien->id], 'active' => true],
+            ]
+        );
     }
 
     // biens.edit
@@ -194,9 +204,20 @@ class AgenceController extends BaseController
     {
         $agence = Auth::guard('agence')->user(); // Récupérez le agence connecté
         $bien = $agence->biens()->findOrFail($bien); // Récupérez le bien de l'agence
-        return Inertia::render('Agence/Biens/Edit', [ // Vue Inertia pour éditer un bien
-            'bien' => $bien,
-        ]);
+        // return Inertia::render('Agence/Biens/Edit', [ // Vue Inertia pour éditer un bien
+        //     'bien' => $bien,
+        // ]);
+        return $this->renderWithBreadcrumbs(
+            'Agence/Biens/Edit',
+            [
+                'bien' => $bien,
+            ],
+            [
+                ['label' => 'Biens', 'route' => 'agence.biens.index'],
+                ['label' => $bien->titre, 'route' => 'agence.biens.show', 'params' => ['bien' => $bien->id]],
+                ['label' => 'Modifier', 'route' => 'agence.biens.edit', 'params' => ['bien' => $bien->id], 'active' => true],
+            ]
+        );
     }
 
     // biens.update

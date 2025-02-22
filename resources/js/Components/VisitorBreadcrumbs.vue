@@ -31,7 +31,7 @@ defineProps({
     align-items: center;
     font-size: 0.9em;
     color: #666;
-    margin-bottom: 15px;
+    margin: 2em;
 }
 
 .breadcrumb-item {
